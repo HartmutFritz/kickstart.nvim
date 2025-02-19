@@ -1046,8 +1046,10 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
---
--- MY STUFF
+
+-- #################################
+-- ########## MY STUFF #############
+-- #################################
 
 vim.keymap.set('n', 'j', 'gj', { noremap = true })
 vim.keymap.set('n', 'k', 'gk', { noremap = true })
@@ -1063,8 +1065,6 @@ vim.keymap.set('n', 'Y', 'y$')
 
 vim.keymap.set('n', '<C-d>', '<C-d>zz')
 vim.keymap.set('n', '<C-u>', '<C-u>zz')
-vim.keymap.set('n', '<A-d>', '<C-d>zz')
-vim.keymap.set('n', '<A-u>', '<C-u>zz')
 
 vim.keymap.set('n', 'n', 'nzzzv')
 vim.keymap.set('n', 'N', 'Nzzzv')
@@ -1072,6 +1072,10 @@ vim.keymap.set('n', 'N', 'Nzzzv')
 -- L and H
 vim.keymap.set({ 'n', 'v', 'x', 'o' }, 'H', '_')
 vim.keymap.set({ 'n', 'v', 'x', 'o' }, 'L', '$')
+
+-- move lines
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
 
 -- No clipboard override
 vim.keymap.set('x', '<leader>p', [["_dP]])
@@ -1085,7 +1089,9 @@ end)
 
 vim.keymap.set({ 'n', 'v', 'x', 'o' }, '<leader>c', 'gcc', { remap = true })
 
--- Set
+-- ###################
+-- ### Settings ######
+-- ###################
 
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
@@ -1095,6 +1101,8 @@ vim.opt.expandtab = true
 vim.o.linebreak = true
 vim.o.autoindent = true -- Indents word-wrapped lines as much as the 'parent' line
 vim.o.breakindent = true -- Ensures word-wrap does not split words
+
+vim.opt.smartindent = true
 
 -- When editing a file, always jump to the last known cursor position.
 vim.cmd [[
@@ -1107,3 +1115,41 @@ vim.opt.undodir = os.getenv 'HOME' .. '/.vim/undodir'
 vim.opt.undofile = true
 
 vim.opt.termguicolors = true -- enable richer colors
+
+-- ##################################
+-- ##############  firevim  #########
+-- ##################################
+
+if vim.g.started_by_firenvim then
+  -- General config for firenvim
+  vim.g.firenvim_config = {
+    globalSettings = {
+      alt = 'all',
+    },
+    localSettings = {
+      ['.*'] = {
+        cmdline = 'neovim',
+        priority = 0,
+        selector = 'textarea',
+        takeover = 'never',
+      },
+    },
+  }
+
+  -- Setup function for firenvim
+  local function setup_firenvim()
+    vim.opt.filetype = 'markdown'
+    vim.opt.ruler = false
+    vim.opt.showcmd = false
+    vim.opt.laststatus = 0
+    vim.opt.showtabline = 0
+  end
+
+  -- Create autocmd group and command
+  local firenvim_group = vim.api.nvim_create_augroup('firenvim', { clear = true })
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = 'text',
+    callback = setup_firenvim,
+    group = firenvim_group,
+  })
+end
