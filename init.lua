@@ -1116,6 +1116,9 @@ vim.opt.undofile = true
 
 vim.opt.termguicolors = true -- enable richer colors
 
+-- to not have the keystrokes in the bottom right corner
+vim.opt.showcmd = false
+
 -- ##################################
 -- ##############  firevim  #########
 -- ##################################
