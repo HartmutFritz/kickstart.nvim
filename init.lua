@@ -891,10 +891,84 @@ require('lazy').setup({
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
       require('rose-pine').setup {
-        disable_background = true,
+        variant = 'auto', -- auto, main, moon, or dawn
+        dark_variant = 'main', -- main, moon, or dawn
+        dim_inactive_windows = false,
+        extend_background_behind_borders = true,
+
+        enable = {
+          terminal = true,
+          legacy_highlights = true, -- Improve compatibility for previous versions of Neovim
+          migrations = true, -- Handle deprecated options automatically
+        },
+
+        styles = {
+          bold = true,
+          italic = true,
+          transparency = true,
+        },
+
+        groups = {
+          border = 'muted',
+          link = 'iris',
+          panel = 'surface',
+
+          error = 'love',
+          hint = 'iris',
+          info = 'foam',
+          note = 'pine',
+          todo = 'rose',
+          warn = 'gold',
+
+          git_add = 'foam',
+          git_change = 'rose',
+          git_delete = 'love',
+          git_dirty = 'rose',
+          git_ignore = 'muted',
+          git_merge = 'iris',
+          git_rename = 'pine',
+          git_stage = 'iris',
+          git_text = 'rose',
+          git_untracked = 'subtle',
+
+          h1 = 'iris',
+          h2 = 'foam',
+          h3 = 'rose',
+          h4 = 'gold',
+          h5 = 'pine',
+          h6 = 'foam',
+        },
+
+        palette = {
+          -- Override the builtin palette per variant
+          -- moon = {
+          --     base = '#18191a',
+          --     overlay = '#363738',
+          -- },
+        },
+
+        highlight_groups = {
+          -- Comment = { fg = "foam" },
+          -- VertSplit = { fg = "muted", bg = "muted" },
+        },
+
+        before_highlight = function(group, highlight, palette)
+          -- Disable all undercurls
+          -- if highlight.undercurl then
+          --     highlight.undercurl = false
+          -- end
+          --
+          -- Change palette colour
+          -- if highlight.fg == palette.pine then
+          --     highlight.fg = palette.foam
+          -- end
+        end,
       }
 
-      vim.cmd 'colorscheme rose-pine'
+      -- vim.cmd 'colorscheme rose-pine'
+      -- vim.cmd("colorscheme rose-pine-main")
+      vim.cmd 'colorscheme rose-pine-moon'
+      -- vim.cmd("colorscheme rose-pine-dawn")
     end,
     --
     -- "catppuccin/nvim",
@@ -906,10 +980,15 @@ require('lazy').setup({
     -- 	vim.cmd.colorscheme("catppuccin")
     -- end,
     --
-    -- "olimorris/onedarkpro.nvim",
+    -- 'olimorris/onedarkpro.nvim',
     -- priority = 1000, -- Make sure to load this before all the other start plugins.
     -- config = function()
-    -- 	vim.cmd("colorscheme onedark")
+    --   require('onedarkpro').setup {
+    --     options = {
+    --       transparency = true,
+    --     },
+    --   }
+    --   vim.cmd 'colorscheme onedark'
     -- end,
   },
 
@@ -1047,78 +1126,6 @@ require('lazy').setup({
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 
--- #################################
--- ########## MY STUFF #############
--- #################################
-
-vim.keymap.set('n', 'j', 'gj', { noremap = true })
-vim.keymap.set('n', 'k', 'gk', { noremap = true })
-
-vim.keymap.set('n', '<leader>w', ':w<CR>')
-vim.keymap.set('n', '<C-s>', ':w<CR>')
-vim.keymap.set('n', '<leader>q', ':wq<CR>')
-vim.keymap.set('n', '<leader>t', ':q!<CR>')
-
--- select all, Y
-vim.keymap.set('n', '<C-a>', 'ggVG', { noremap = true, silent = true })
-vim.keymap.set('n', 'Y', 'y$')
-
-vim.keymap.set('n', '<C-d>', '<C-d>zz')
-vim.keymap.set('n', '<C-u>', '<C-u>zz')
-
-vim.keymap.set('n', 'n', 'nzzzv')
-vim.keymap.set('n', 'N', 'Nzzzv')
-
--- L and H
-vim.keymap.set({ 'n', 'v', 'x', 'o' }, 'H', '_')
-vim.keymap.set({ 'n', 'v', 'x', 'o' }, 'L', '$')
-
--- move lines
-vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
-vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
-
--- No clipboard override
-vim.keymap.set('x', '<leader>p', [["_dP]])
-vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]])
-
-vim.keymap.set('i', '<C-c>', '<Esc>')
-
-vim.keymap.set('n', '<leader><leader>', function()
-  vim.cmd 'so'
-end)
-
-vim.keymap.set({ 'n', 'v', 'x', 'o' }, '<leader>c', 'gcc', { remap = true })
-
--- ###################
--- ### Settings ######
--- ###################
-
-vim.opt.tabstop = 4
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
-
-vim.o.linebreak = true
-vim.o.autoindent = true -- Indents word-wrapped lines as much as the 'parent' line
-vim.o.breakindent = true -- Ensures word-wrap does not split words
-
-vim.opt.smartindent = true
-
--- When editing a file, always jump to the last known cursor position.
-vim.cmd [[
-autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-]]
-
-vim.opt.swapfile = false
-vim.opt.backup = false
-vim.opt.undodir = os.getenv 'HOME' .. '/.vim/undodir'
-vim.opt.undofile = true
-
-vim.opt.termguicolors = true -- enable richer colors
-
--- to not have the keystrokes in the bottom right corner
-vim.opt.showcmd = false
-
 -- ##################################
 -- ##############  firevim  #########
 -- ##################################
@@ -1156,3 +1163,74 @@ if vim.g.started_by_firenvim then
     group = firenvim_group,
   })
 end
+
+-- #################################
+-- ########## MY STUFF #############
+-- #################################
+
+vim.keymap.set('n', 'j', 'gj', { noremap = true })
+vim.keymap.set('n', 'k', 'gk', { noremap = true })
+
+vim.keymap.set('n', '<C-s>', ':w<CR>')
+
+-- vim.keymap.set('n', '<leader>w', ':w<CR>')
+-- vim.keymap.set('n', '<leader>q', ':wq<CR>')
+-- vim.keymap.set('n', '<leader>t', ':q!<CR>')
+
+-- select all, Y
+vim.keymap.set('n', '<C-a>', 'ggVG', { noremap = true, silent = true })
+vim.keymap.set('n', 'Y', 'y$')
+
+vim.keymap.set('n', '<C-d>', '<C-d>zz')
+vim.keymap.set('n', '<C-u>', '<C-u>zz')
+
+vim.keymap.set('n', 'n', 'nzzzv')
+vim.keymap.set('n', 'N', 'Nzzzv')
+
+-- L and H
+vim.keymap.set({ 'n', 'v', 'x', 'o' }, 'H', '_')
+vim.keymap.set({ 'n', 'v', 'x', 'o' }, 'L', '$')
+
+-- move lines
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
+
+-- No clipboard override
+vim.keymap.set('x', '<leader>p', [["_dP]])
+vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]])
+
+-- vim.keymap.set('n', '<leader><leader>', function()
+--   vim.cmd 'so'
+-- end)
+
+-- vim.keymap.set({ 'n', 'v', 'x', 'o' }, '<leader>c', 'gcc', { remap = true })
+
+-- ###################
+-- ### Settings ######
+-- ###################
+
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+
+vim.o.linebreak = true
+vim.o.autoindent = true -- Indents word-wrapped lines as much as the 'parent' line
+vim.o.breakindent = true -- Ensures word-wrap does not split words
+
+vim.opt.smartindent = true
+
+-- When editing a file, always jump to the last known cursor position.
+vim.cmd [[
+autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+]]
+
+vim.opt.swapfile = false
+vim.opt.backup = false
+vim.opt.undodir = os.getenv 'HOME' .. '/.vim/undodir'
+vim.opt.undofile = true
+
+vim.opt.termguicolors = true -- enable richer colors
+
+-- to not have the keystrokes in the bottom right corner
+vim.opt.showcmd = false
