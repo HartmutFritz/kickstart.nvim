@@ -228,7 +228,7 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -325,7 +325,7 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
-        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+        -- { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
@@ -552,7 +552,7 @@ require('lazy').setup({
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
+          -- map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -1249,7 +1249,7 @@ end
 -- Example usage:
 -- Create a floating window with default dimensions
 vim.api.nvim_create_user_command('Floaterminal', toggle_terminal, {})
-vim.keymap.set('n', '<leader>t', ':Floaterminal<CR>')
+vim.keymap.set({ 'n', 't' }, '<leader>tt', toggle_terminal)
 
 -- #################################
 -- ##########  REMAP  ##############
@@ -1259,10 +1259,6 @@ vim.keymap.set('n', 'j', 'gj', { noremap = true })
 vim.keymap.set('n', 'k', 'gk', { noremap = true })
 
 vim.keymap.set('n', '<C-s>', ':w<CR>')
-
--- vim.keymap.set('n', '<leader>w', ':w<CR>')
--- vim.keymap.set('n', '<leader>q', ':wq<CR>')
--- vim.keymap.set('n', '<leader>t', ':q!<CR>')
 
 -- select all, Y
 vim.keymap.set('n', '<C-a>', 'ggVG', { noremap = true, silent = true })
@@ -1286,11 +1282,9 @@ vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
 vim.keymap.set('x', '<leader>p', [["_dP]])
 vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]])
 
--- vim.keymap.set('n', '<leader><leader>', function()
---   vim.cmd 'so'
--- end)
-
-vim.keymap.set({ 'n', 'v', 'x', 'o' }, '<leader>c', 'gcc', { remap = true })
+-- comment
+vim.keymap.set('n', '<leader>c', 'gcc', { remap = true })
+vim.keymap.set({ 'v', 'x' }, '<leader>c', 'gc', { remap = true })
 
 -- ###################
 -- ### Settings ######
