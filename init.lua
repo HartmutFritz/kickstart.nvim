@@ -1168,24 +1168,24 @@ end
 -- ########## Terminal #############
 -- #################################
 
-vim.api.nvim_create_autocmd('TermOpen', {
-  group = vim.api.nvim_create_augroup('custom-term-open', { clear = true }),
-  callback = function()
-    vim.opt.number = false
-    vim.opt.relativenumber = false
-  end,
-})
-
-local job_id = 0
-vim.keymap.set('n', '<space>to', function()
-  vim.cmd.vnew()
-  vim.cmd.term()
-  -- vim.cmd.wincmd 'J'
-  -- vim.api.nvim_win_set_height(20, 0)
-  job_id = vim.bo.channel
-  vim.fn.chansend(job_id, { 'fish\r\n' })
-  vim.fn.chansend(job_id, { 'clear\r\n' })
-end)
+-- vim.api.nvim_create_autocmd('TermOpen', {
+--   group = vim.api.nvim_create_augroup('custom-term-open', { clear = true }),
+--   callback = function()
+--     vim.opt.number = false
+--     vim.opt.relativenumber = false
+--   end,
+-- })
+--
+-- local job_id = 0
+-- vim.keymap.set('n', '<space>to', function()
+--   vim.cmd.vnew()
+--   vim.cmd.term()
+--   -- vim.cmd.wincmd 'J'
+--   -- vim.api.nvim_win_set_height(20, 0)
+--   job_id = vim.bo.channel
+--   vim.fn.chansend(job_id, { 'fish\r\n' })
+--   vim.fn.chansend(job_id, { 'clear\r\n' })
+-- end)
 
 -- #################################
 -- ######## FloatTerminal ##########
@@ -1249,10 +1249,10 @@ end
 -- Example usage:
 -- Create a floating window with default dimensions
 vim.api.nvim_create_user_command('Floaterminal', toggle_terminal, {})
-vim.keymap.set('n', '<leader>tt', ':Floaterminal<CR>')
+vim.keymap.set('n', '<leader>t', ':Floaterminal<CR>')
 
 -- #################################
--- ########## MY STUFF #############
+-- ##########  REMAP  ##############
 -- #################################
 
 vim.keymap.set('n', 'j', 'gj', { noremap = true })
@@ -1290,7 +1290,7 @@ vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]])
 --   vim.cmd 'so'
 -- end)
 
--- vim.keymap.set({ 'n', 'v', 'x', 'o' }, '<leader>c', 'gcc', { remap = true })
+vim.keymap.set({ 'n', 'v', 'x', 'o' }, '<leader>c', 'gcc', { remap = true })
 
 -- ###################
 -- ### Settings ######
