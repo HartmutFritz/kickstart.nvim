@@ -327,7 +327,7 @@ require('lazy').setup({
       spec = {
         -- { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
-        { '<leader>r', group = '[R]ename' },
+        -- { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
@@ -548,7 +548,7 @@ require('lazy').setup({
 
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
-          map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+          map('<leader>n', vim.lsp.buf.rename, 'Re[n]ame')
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
@@ -884,93 +884,55 @@ require('lazy').setup({
     end,
   },
 
-  { -- You can easily change to a different colorscheme.
+  {
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    --
+
     'rose-pine/neovim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
       require('rose-pine').setup {
-        variant = 'auto', -- auto, main, moon, or dawn
-        dark_variant = 'main', -- main, moon, or dawn
-        dim_inactive_windows = false,
-        extend_background_behind_borders = true,
-
         enable = {
-          terminal = true,
+          terminal = false,
           legacy_highlights = true, -- Improve compatibility for previous versions of Neovim
           migrations = true, -- Handle deprecated options automatically
         },
-
         styles = {
           bold = true,
           italic = true,
           transparency = true,
         },
-
-        groups = {
-          border = 'muted',
-          link = 'iris',
-          panel = 'surface',
-
-          error = 'love',
-          hint = 'iris',
-          info = 'foam',
-          note = 'pine',
-          todo = 'rose',
-          warn = 'gold',
-
-          git_add = 'foam',
-          git_change = 'rose',
-          git_delete = 'love',
-          git_dirty = 'rose',
-          git_ignore = 'muted',
-          git_merge = 'iris',
-          git_rename = 'pine',
-          git_stage = 'iris',
-          git_text = 'rose',
-          git_untracked = 'subtle',
-
-          h1 = 'iris',
-          h2 = 'foam',
-          h3 = 'rose',
-          h4 = 'gold',
-          h5 = 'pine',
-          h6 = 'foam',
-        },
-
-        palette = {
-          -- Override the builtin palette per variant
-          -- moon = {
-          --     base = '#18191a',
-          --     overlay = '#363738',
-          -- },
-        },
-
-        highlight_groups = {
-          -- Comment = { fg = "foam" },
-          -- VertSplit = { fg = "muted", bg = "muted" },
-        },
-
-        before_highlight = function(group, highlight, palette)
-          -- Disable all undercurls
-          -- if highlight.undercurl then
-          --     highlight.undercurl = false
-          -- end
-          --
-          -- Change palette colour
-          -- if highlight.fg == palette.pine then
-          --     highlight.fg = palette.foam
-          -- end
-        end,
       }
-
-      -- vim.cmd 'colorscheme rose-pine'
+      vim.cmd 'colorscheme rose-pine'
       -- vim.cmd("colorscheme rose-pine-main")
-      vim.cmd 'colorscheme rose-pine-moon'
+      -- vim.cmd 'colorscheme rose-pine-moon'
       -- vim.cmd("colorscheme rose-pine-dawn")
     end,
+
+    -- 'folke/tokyonight.nvim',
+    -- priority = 1000, -- Make sure to load this before all the other start plugins.
+    -- config = function()
+    --   ---@diagnostic disable-next-line: missing-fields
+    --   require('tokyonight').setup {
+    --     styles = {
+    --       comments = { italic = false }, -- Disable italics in comments
+    --     },
+    --   }
     --
+    --   -- Load the colorscheme here.
+    --   -- Like many other themes, this one has different styles, and you could load
+    --   -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+    --   vim.cmd.colorscheme 'tokyonight-night'
+    -- end,
+
+    -- 'neanias/everforest-nvim',
+    -- priority = 1000, -- Make sure to load this before all the other start plugins.
+    -- config = function()
+    --   require('everforest').setup {
+    --     transparent_background_level = 1,
+    --   }
+    --   vim.cmd [[colorscheme everforest]]
+    -- end,
+
     -- "catppuccin/nvim",
     -- priority = 1000, -- Make sure to load this before all the other start plugins.
     -- config = function()
@@ -979,13 +941,13 @@ require('lazy').setup({
     -- 	})
     -- 	vim.cmd.colorscheme("catppuccin")
     -- end,
-    --
+
     -- 'olimorris/onedarkpro.nvim',
     -- priority = 1000, -- Make sure to load this before all the other start plugins.
     -- config = function()
     --   require('onedarkpro').setup {
     --     options = {
-    --       transparency = true,
+    --       transparency = false,
     --     },
     --   }
     --   vim.cmd 'colorscheme onedark'
@@ -1201,11 +1163,11 @@ local state = {
 local function create_floating_window(opts)
   opts = opts or {}
   local width = opts.width or math.floor(vim.o.columns * 0.8)
-  local height = opts.height or math.floor(vim.o.lines * 0.8)
+  local height = opts.height or math.floor(vim.o.lines * 0.45)
 
   -- Calculate the position to center the window
   local col = math.floor((vim.o.columns - width) / 2)
-  local row = math.floor((vim.o.lines - height) / 2)
+  local row = 0
 
   -- Create a buffer
   local buf = nil
@@ -1235,21 +1197,35 @@ end
 local toggle_terminal = function()
   if not vim.api.nvim_win_is_valid(state.floating.win) then
     state.floating = create_floating_window { buf = state.floating.buf }
+    vim.cmd 'normal! G'
+    -- vim.cmd 'startinsert'
     if vim.bo[state.floating.buf].buftype ~= 'terminal' then
       vim.cmd.terminal()
-      local job_id = vim.bo.channel
-      vim.fn.chansend(job_id, { 'fish\r\n' })
-      vim.fn.chansend(job_id, { 'clear\r\n' })
+      job_id = vim.bo.channel
     end
   else
     vim.api.nvim_win_hide(state.floating.win)
   end
 end
 
--- Example usage:
 -- Create a floating window with default dimensions
 vim.api.nvim_create_user_command('Floaterminal', toggle_terminal, {})
-vim.keymap.set({ 'n', 't' }, '<leader>tt', toggle_terminal)
+vim.keymap.set({ 'n', 't' }, '<C-s>', toggle_terminal)
+
+vim.keymap.set('n', '<leader>r', function()
+  if rawget(_G, 'job_id') == nil then
+    toggle_terminal()
+    toggle_terminal()
+  end
+  local filename = vim.api.nvim_buf_get_name(0)
+  vim.fn.chansend(job_id, { filename .. '\r\n' })
+  toggle_terminal()
+end)
+
+vim.keymap.set('n', '<leader>x', function()
+  local filename = vim.api.nvim_buf_get_name(0)
+  vim.fn.chansend(job_id, { 'chmod +x ' .. filename .. '\r\n' })
+end)
 
 -- #################################
 -- ##########  REMAP  ##############
@@ -1257,8 +1233,6 @@ vim.keymap.set({ 'n', 't' }, '<leader>tt', toggle_terminal)
 
 vim.keymap.set('n', 'j', 'gj', { noremap = true })
 vim.keymap.set('n', 'k', 'gk', { noremap = true })
-
-vim.keymap.set('n', '<C-s>', ':w<CR>')
 
 -- select all, Y
 vim.keymap.set('n', '<C-a>', 'ggVG', { noremap = true, silent = true })
@@ -1315,3 +1289,5 @@ vim.opt.termguicolors = true -- enable richer colors
 
 -- to not have the keystrokes in the bottom right corner
 vim.opt.showcmd = false
+
+vim.o.shell = '/usr/bin/fish'
