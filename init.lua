@@ -1291,3 +1291,11 @@ vim.opt.termguicolors = true -- enable richer colors
 vim.opt.showcmd = false
 
 vim.o.shell = '/usr/bin/fish'
+
+-- Disable line wrap for Python files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'python', 'lua', 'c' },
+  callback = function()
+    vim.opt_local.wrap = false
+  end,
+})
