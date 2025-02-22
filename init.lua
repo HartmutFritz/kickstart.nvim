@@ -1155,6 +1155,10 @@ vim.keymap.set('n', '<leader>r', function()
 end)
 
 vim.keymap.set('n', '<leader>x', function()
+  if rawget(_G, 'job_id') == nil then
+    toggle_terminal()
+    toggle_terminal()
+  end
   local filename = vim.api.nvim_buf_get_name(0)
   vim.fn.chansend(job_id, { 'chmod +x ' .. filename .. '\r\n' })
 end)
