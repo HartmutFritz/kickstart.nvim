@@ -255,6 +255,11 @@ require('lazy').setup({
   -- you do for a plugin at the top level, you can do for a dependency.
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+  },
 
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
@@ -328,6 +333,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      vim.keymap.set('n', '<leader>o', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -883,6 +889,15 @@ require('lazy').setup({
     opts = { signs = false },
   },
   {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
+  },
+  {
     'stevearc/oil.nvim',
     ---@module 'oil'
     ---@type oil.SetupOpts
@@ -1129,8 +1144,8 @@ end
 local toggle_terminal = function()
   if not vim.api.nvim_win_is_valid(state.floating.win) then
     state.floating = create_floating_window { buf = state.floating.buf }
-    vim.cmd 'normal! G'
-    -- vim.cmd 'startinsert'
+    -- vim.cmd 'normal! G'
+    vim.cmd 'startinsert'
     if vim.bo[state.floating.buf].buftype ~= 'terminal' then
       vim.cmd.terminal()
       job_id = vim.bo.channel
@@ -1237,3 +1252,49 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.opt_local.wrap = false
   end,
 })
+
+-- Disable line wrap for Python files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'markdown' },
+  callback = function()
+    vim.opt.number = false
+    -- Save when leaving insert mode
+    vim.api.nvim_create_autocmd('InsertLeave', {
+      pattern = '*',
+      command = 'silent! write',
+    })
+  end,
+})
+
+-- Harpoon
+
+local harpoon = require 'harpoon'
+harpoon:setup()
+
+vim.keymap.set('n', '<leader>a', function()
+  harpoon:list():add()
+end)
+vim.keymap.set('n', '<C-e>', function()
+  harpoon.ui:toggle_quick_menu(harpoon:list())
+end)
+
+vim.keymap.set('n', '<C-1>', function()
+  harpoon:list():select(1)
+end)
+vim.keymap.set('n', '<C-2>', function()
+  harpoon:list():select(2)
+end)
+vim.keymap.set('n', '<C-3>', function()
+  harpoon:list():select(3)
+end)
+vim.keymap.set('n', '<C-4>', function()
+  harpoon:list():select(4)
+end)
+
+-- Toggle previous & next buffers stored within Harpoon list
+-- vim.keymap.set('n', '<C-S-P>', function()
+--   harpoon:list():prev()
+-- end)
+-- vim.keymap.set('n', '<C-S-N>', function()
+--   harpoon:list():next()
+-- end)
