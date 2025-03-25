@@ -760,7 +760,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          -- ["<C-y>"] = cmp.mapping.confirm({ select = true }),
+          ['<C-y>'] = cmp.mapping.confirm { select = true },
           ['<Tab>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
@@ -879,6 +879,8 @@ require('lazy').setup({
     --   }
     --   vim.cmd 'colorscheme onedark'
     -- end,
+
+    -- do not comment the next },
   },
 
   -- Highlight todo, notes, etc in comments
@@ -1104,6 +1106,7 @@ local state = {
   floating = {
     buf = -1,
     win = -1,
+    insert_mode = true, -- Track if terminal was in insert mode
   },
 }
 
@@ -1111,46 +1114,45 @@ local function create_floating_window(opts)
   opts = opts or {}
   local width = opts.width or math.floor(vim.o.columns * 0.8)
   local height = opts.height or math.floor(vim.o.lines * 0.5)
-
-  -- Calculate the position to center the window
   local col = math.floor((vim.o.columns - width) / 2)
   local row = 0
 
-  -- Create a buffer
-  local buf = nil
-  if vim.api.nvim_buf_is_valid(opts.buf) then
-    buf = opts.buf
-  else
-    buf = vim.api.nvim_create_buf(false, true) -- No file, scratch buffer
-  end
-
-  -- Define window configuration
+  local buf = vim.api.nvim_buf_is_valid(opts.buf) and opts.buf or vim.api.nvim_create_buf(false, true)
   local win_config = {
     relative = 'editor',
     width = width,
     height = height,
     col = col,
     row = row,
-    style = 'minimal', -- No borders or extra UI elements
+    style = 'minimal',
     border = 'rounded',
   }
 
-  -- Create the floating window
   local win = vim.api.nvim_open_win(buf, true, win_config)
-
-  return { buf = buf, win = win }
+  return { buf = buf, win = win, insert_mode = state.floating.insert_mode }
 end
 
 local toggle_terminal = function()
   if not vim.api.nvim_win_is_valid(state.floating.win) then
     state.floating = create_floating_window { buf = state.floating.buf }
-    -- vim.cmd 'normal! G'
-    vim.cmd 'startinsert'
     if vim.bo[state.floating.buf].buftype ~= 'terminal' then
       vim.cmd.terminal()
       job_id = vim.bo.channel
     end
+
+    -- Restore insert mode state
+    if not state.floating.insert_mode then
+      vim.api.nvim_win_call(state.floating.win, function()
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-\\><C-n>', true, false, true), 'n', false)
+      end)
+    else
+      vim.cmd.startinsert()
+    end
   else
+    -- Save current mode before hiding
+    vim.api.nvim_win_call(state.floating.win, function()
+      state.floating.insert_mode = (vim.fn.mode() == 'i' or vim.fn.mode() == 't')
+    end)
     vim.api.nvim_win_hide(state.floating.win)
   end
 end
@@ -1164,9 +1166,35 @@ vim.keymap.set('n', '<leader>r', function()
     toggle_terminal()
     toggle_terminal()
   end
-  local filename = vim.api.nvim_buf_get_name(0)
-  vim.fn.chansend(job_id, { filename .. '\r\n' })
+  local filename = vim.fn.expand '%'
+  vim.fn.chansend(job_id, { 'python ' .. filename .. '\r\n' })
   toggle_terminal()
+  vim.cmd 'startinsert'
+end)
+
+vim.keymap.set('n', '<leader>x', function()
+  if rawget(_G, 'job_id') == nil then
+    toggle_terminal()
+    toggle_terminal()
+  end
+  local filename = vim.api.nvim_buf_get_name(0)
+  vim.fn.chansend(job_id, { 'chmod +x ' .. filename .. '\r\n' })
+end)
+
+-- Create a floating window with default dimensions
+vim.api.nvim_create_user_command('Floaterminal', toggle_terminal, {})
+vim.keymap.set({ 'n', 't' }, '<C-s>', toggle_terminal)
+
+vim.keymap.set('n', '<leader>r', function()
+  if rawget(_G, 'job_id') == nil then
+    toggle_terminal()
+    toggle_terminal()
+  end
+  local filename = vim.fn.expand '%'
+  vim.fn.chansend(job_id, { 'python ' .. filename .. '\r\n' })
+  toggle_terminal()
+  -- vim.cmd 'normal! G'
+  vim.cmd 'startinsert'
 end)
 
 vim.keymap.set('n', '<leader>x', function()
@@ -1186,7 +1214,7 @@ vim.keymap.set('n', 'j', 'gj', { noremap = true })
 vim.keymap.set('n', 'k', 'gk', { noremap = true })
 
 -- select all, Y
-vim.keymap.set('n', '<C-a>', 'ggVG', { noremap = true, silent = true })
+-- vim.keymap.set('n', '<C-a>', 'ggVG', { noremap = true, silent = true })
 vim.keymap.set('n', 'Y', 'y$')
 
 vim.keymap.set('n', '<C-d>', '<C-d>zz')
@@ -1260,11 +1288,14 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.opt.number = false
     -- Save when leaving insert mode
     vim.api.nvim_create_autocmd('InsertLeave', {
-      pattern = '*',
+      pattern = '*.md',
       command = 'silent! write',
     })
   end,
 })
+
+-- also indent comments
+vim.opt.formatoptions:append 'j'
 
 -- Harpoon
 
