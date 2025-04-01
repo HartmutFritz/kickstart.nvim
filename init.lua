@@ -98,10 +98,10 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+-- vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+-- vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+-- vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -1112,7 +1112,7 @@ local state = {
 
 local function create_floating_window(opts)
   opts = opts or {}
-  local width = opts.width or math.floor(vim.o.columns * 0.8)
+  local width = opts.width or math.floor(vim.o.columns * 0.9)
   local height = opts.height or math.floor(vim.o.lines * 0.5)
   local col = math.floor((vim.o.columns - width) / 2)
   local row = 0
@@ -1168,33 +1168,8 @@ vim.keymap.set('n', '<leader>r', function()
   end
   local filename = vim.fn.expand '%'
   vim.fn.chansend(job_id, { 'python ' .. filename .. '\r\n' })
+  state.floating.insert_mode = true
   toggle_terminal()
-  vim.cmd 'startinsert'
-end)
-
-vim.keymap.set('n', '<leader>x', function()
-  if rawget(_G, 'job_id') == nil then
-    toggle_terminal()
-    toggle_terminal()
-  end
-  local filename = vim.api.nvim_buf_get_name(0)
-  vim.fn.chansend(job_id, { 'chmod +x ' .. filename .. '\r\n' })
-end)
-
--- Create a floating window with default dimensions
-vim.api.nvim_create_user_command('Floaterminal', toggle_terminal, {})
-vim.keymap.set({ 'n', 't' }, '<C-s>', toggle_terminal)
-
-vim.keymap.set('n', '<leader>r', function()
-  if rawget(_G, 'job_id') == nil then
-    toggle_terminal()
-    toggle_terminal()
-  end
-  local filename = vim.fn.expand '%'
-  vim.fn.chansend(job_id, { 'python ' .. filename .. '\r\n' })
-  toggle_terminal()
-  -- vim.cmd 'normal! G'
-  vim.cmd 'startinsert'
 end)
 
 vim.keymap.set('n', '<leader>x', function()
@@ -1309,16 +1284,16 @@ vim.keymap.set('n', '<C-e>', function()
   harpoon.ui:toggle_quick_menu(harpoon:list())
 end)
 
-vim.keymap.set('n', '<C-1>', function()
+vim.keymap.set('n', '<C-h>', function()
   harpoon:list():select(1)
 end)
-vim.keymap.set('n', '<C-2>', function()
+vim.keymap.set('n', '<C-j>', function()
   harpoon:list():select(2)
 end)
-vim.keymap.set('n', '<C-3>', function()
+vim.keymap.set('n', '<C-k>', function()
   harpoon:list():select(3)
 end)
-vim.keymap.set('n', '<C-4>', function()
+vim.keymap.set('n', '<C-l>', function()
   harpoon:list():select(4)
 end)
 
