@@ -587,7 +587,16 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        pyright = {},
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                strictOptional = false, -- Disable strict optional checks
+                -- Other analysis settings can go here
+              },
+            },
+          },
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -1215,6 +1224,12 @@ vim.keymap.set('n', '<leader>c', 'gcc', { remap = true })
 vim.keymap.set({ 'v', 'x' }, '<leader>c', 'gc', { remap = true })
 
 vim.keymap.set('n', '<leader>e', '<cmd>Oil<CR>', { remap = true })
+
+vim.keymap.set('n', '<leader>i', 'A<Space># type: ignore<Esc>', { remap = true })
+
+vim.keymap.set('n', '<C-S-a>', 'ggVG', { noremap = true, silent = true })
+vim.keymap.set('v', '<C-S-a>', '<Esc>ggVG', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-S-a>', '<Esc>ggVG', { noremap = true, silent = true })
 
 -- ###################
 -- ### Settings ######
