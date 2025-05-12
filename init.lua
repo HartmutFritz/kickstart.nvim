@@ -587,16 +587,23 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        pyright = {
-          settings = {
-            python = {
-              analysis = {
-                strictOptional = false, -- Disable strict optional checks
-                -- Other analysis settings can go here
-              },
-            },
-          },
-        },
+        -- pyright = {
+        --   settings = {
+        --     python = {
+        --       analysis = {
+        --         typeCheckingMode = 'basic',
+        --         strictOptional = false,
+        --         diagnosticSeverityOverrides = {
+        --           reportGeneralTypeIssues = 'none',
+        --           reportOptionalSubscript = 'none',
+        --           reportOptionalMemberAccess = 'none',
+        --           reportOptionalIterable = 'none',
+        --           reportOptionalCall = 'none',
+        --         },
+        --       },
+        --     },
+        --   },
+        -- },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
