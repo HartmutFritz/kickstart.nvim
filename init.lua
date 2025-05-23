@@ -1188,6 +1188,18 @@ end
 vim.api.nvim_create_user_command('Floaterminal', toggle_terminal, {})
 vim.keymap.set({ 'n', 't' }, '<C-s>', toggle_terminal)
 
+-- old leader r function
+-- vim.keymap.set('n', '<leader>r', function()
+--   if rawget(_G, 'job_id') == nil then
+--     toggle_terminal()
+--     toggle_terminal()
+--   end
+--   local filename = vim.fn.expand '%'
+--   vim.fn.chansend(job_id, { 'python ' .. filename .. '\r\n' })
+--   state.floating.insert_mode = true
+--   toggle_terminal()
+-- end)
+
 vim.keymap.set('n', '<leader>r', function()
   if rawget(_G, 'job_id') == nil then
     toggle_terminal()
@@ -1195,18 +1207,29 @@ vim.keymap.set('n', '<leader>r', function()
   end
   local filename = vim.fn.expand '%'
   vim.fn.chansend(job_id, { 'python ' .. filename .. '\r\n' })
-  state.floating.insert_mode = true
-  toggle_terminal()
-end)
-
-vim.keymap.set('n', '<leader>x', function()
-  if rawget(_G, 'job_id') == nil then
-    toggle_terminal()
+  -- Ensure the terminal window is open
+  if not vim.api.nvim_win_is_valid(state.floating.win) then
     toggle_terminal()
   end
-  local filename = vim.api.nvim_buf_get_name(0)
-  vim.fn.chansend(job_id, { 'chmod +x ' .. filename .. '\r\n' })
+  -- Switch to normal mode and scroll to the bottom
+  vim.api.nvim_win_call(state.floating.win, function()
+    -- Exit terminal mode to normal mode
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-\\><C-n>', true, false, true), 'n', false)
+    -- Scroll to the bottom
+    vim.cmd 'normal! G'
+  end)
+  -- Update state to start in normal mode next time
+  state.floating.insert_mode = false
 end)
+
+-- vim.keymap.set('n', '<leader>x', function()
+--   if rawget(_G, 'job_id') == nil then
+--     toggle_terminal()
+--     toggle_terminal()
+--   end
+--   local filename = vim.api.nvim_buf_get_name(0)
+--   vim.fn.chansend(job_id, { 'chmod +x ' .. filename .. '\r\n' })
+-- end)
 
 -- #################################
 -- ##########  REMAP  ##############
