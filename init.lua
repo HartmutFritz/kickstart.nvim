@@ -604,6 +604,17 @@ require('lazy').setup({
         --     },
         --   },
         -- },
+        pylsp = {
+          settings = {
+            pylsp = {
+              plugins = {
+                pycodestyle = {
+                  enabled = false,
+                },
+              },
+            },
+          },
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -684,7 +695,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { c = true, cpp = true, python = true }
         local lsp_format_opt
         if disable_filetypes[vim.bo[bufnr].filetype] then
           lsp_format_opt = 'never'
@@ -1129,7 +1140,7 @@ local state = {
 local function create_floating_window(opts)
   opts = opts or {}
   local width = opts.width or math.floor(vim.o.columns * 0.9)
-  local height = opts.height or math.floor(vim.o.lines * 0.5)
+  local height = opts.height or math.floor(vim.o.lines * 0.8)
   local col = math.floor((vim.o.columns - width) / 2)
   local row = 0
 
