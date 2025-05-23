@@ -1188,18 +1188,6 @@ end
 vim.api.nvim_create_user_command('Floaterminal', toggle_terminal, {})
 vim.keymap.set({ 'n', 't' }, '<C-s>', toggle_terminal)
 
--- old leader r function
--- vim.keymap.set('n', '<leader>r', function()
---   if rawget(_G, 'job_id') == nil then
---     toggle_terminal()
---     toggle_terminal()
---   end
---   local filename = vim.fn.expand '%'
---   vim.fn.chansend(job_id, { 'python ' .. filename .. '\r\n' })
---   state.floating.insert_mode = true
---   toggle_terminal()
--- end)
-
 vim.keymap.set('n', '<leader>r', function()
   if rawget(_G, 'job_id') == nil then
     toggle_terminal()
