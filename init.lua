@@ -1260,6 +1260,10 @@ vim.keymap.set('n', '<C-S-a>', 'ggVG', { noremap = true, silent = true })
 vim.keymap.set('v', '<C-S-a>', '<Esc>ggVG', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-S-a>', '<Esc>ggVG', { noremap = true, silent = true })
 
+vim.keymap.set('n', '<leader>w', '<cmd>w<CR>', { remap = true })
+vim.keymap.set('n', '<leader>q', '<cmd>wq<CR>', { remap = true })
+vim.keymap.set('n', '<leader>t', '<cmd>q!<CR>', { remap = true })
+
 -- ###################
 -- ### Settings ######
 -- ###################
