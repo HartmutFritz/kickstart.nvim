@@ -1294,7 +1294,7 @@ vim.opt.termguicolors = true -- enable richer colors
 -- to not have the keystrokes in the bottom right corner
 vim.opt.showcmd = false
 
-vim.o.shell = '/usr/bin/fish'
+vim.o.shell = '/run/current-system/sw/bin/fish'
 
 -- Disable line wrap for Python files
 vim.api.nvim_create_autocmd('FileType', {
