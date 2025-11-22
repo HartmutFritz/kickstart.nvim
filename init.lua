@@ -261,6 +261,15 @@ require('lazy').setup({
     dependencies = { 'nvim-lua/plenary.nvim' },
   },
 
+  {
+    'lervag/vimtex',
+    lazy = false,
+    config = function()
+      vim.g.vimtex_view_method = 'zathura'
+      vim.g.vimtex_compiler_method = 'latexmk'
+    end,
+  },
+
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
@@ -724,6 +733,7 @@ require('lazy').setup({
     dependencies = {
       -- Snippet Engine & its associated nvim-cmp source
       {
+        'hrsh7th/cmp-omni', -- latex
         'L3MON4D3/LuaSnip',
         build = (function()
           -- Build Step is needed for regex support in snippets.
@@ -831,6 +841,7 @@ require('lazy').setup({
           },
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
+          { name = 'omni' }, -- VimTeX
           { name = 'path' },
           { name = 'nvim_lsp_signature_help' },
         },
@@ -1352,3 +1363,7 @@ end)
 -- vim.keymap.set('n', '<C-S-N>', function()
 --   harpoon:list():next()
 -- end)
+
+-- no clipboard for c and x
+vim.keymap.set({ 'n', 'v' }, 'c', '"_c')
+vim.keymap.set({ 'n', 'v' }, 'x', '"_x')
