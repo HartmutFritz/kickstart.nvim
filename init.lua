@@ -1366,4 +1366,5 @@ end)
 
 -- no clipboard for c and x
 vim.keymap.set({ 'n', 'v' }, 'c', '"_c')
+vim.keymap.set({ 'n', 'v' }, 'C', '"_C')
 vim.keymap.set({ 'n', 'v' }, 'x', '"_x')
