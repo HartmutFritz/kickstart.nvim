@@ -594,7 +594,15 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {
+          cmd = {
+            '/run/current-system/sw/bin/clangd',
+            '--background-index',
+            '--compile-commands-dir=.',
+            '--query-driver=/run/current-system/sw/bin/gcc',
+          },
+          filetypes = { 'c' },
+        },
         -- gopls = {},
         -- pyright = {
         --   settings = {
@@ -614,6 +622,7 @@ require('lazy').setup({
         --   },
         -- },
         pylsp = {
+          cmd = { '/run/current-system/sw/bin/pylsp' }, -- use system pylsp instead of mason
           settings = {
             pylsp = {
               plugins = {
@@ -669,14 +678,30 @@ require('lazy').setup({
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
+      -- require('mason-lspconfig').setup {
+      --   handlers = {
+      --     function(server_name)
+      --       local server = servers[server_name] or {}
+      --       -- This handles overriding only values explicitly passed
+      --       -- by the server configuration above. Useful when disabling
+      --       -- certain features of an LSP (for example, turning off formatting for ts_ls)
+      --       server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      --       require('lspconfig')[server_name].setup(server)
+      --     end,
+      --   },
+      -- }
       require('mason-lspconfig').setup {
         handlers = {
           function(server_name)
+            -- block Mason-managed servers you don't want
+            if server_name == 'pylsp' or server_name == 'clangd' then
+              return
+            end
+
             local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
+
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+
             require('lspconfig')[server_name].setup(server)
           end,
         },
@@ -1200,6 +1225,7 @@ vim.api.nvim_create_user_command('Floaterminal', toggle_terminal, {})
 vim.keymap.set({ 'n', 't' }, '<C-s>', toggle_terminal)
 
 vim.keymap.set('n', '<leader>r', function()
+  vim.cmd 'write'
   if rawget(_G, 'job_id') == nil then
     toggle_terminal()
     toggle_terminal()
@@ -1327,6 +1353,13 @@ vim.api.nvim_create_autocmd('FileType', {
     })
   end,
 })
+
+-- Highlight all occurrences of word under cursor
+vim.keymap.set('n', '<leader>h', function()
+  local word = vim.fn.expand '<cword>'
+  vim.fn.setreg('/', '\\<' .. word .. '\\>')
+  vim.opt.hlsearch = true
+end, { desc = 'Highlight word under cursor' })
 
 -- also indent comments
 vim.opt.formatoptions:append 'j'
